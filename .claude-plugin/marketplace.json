@@ -1,0 +1,12 @@
+{
+  "name": "apex-marketplace",
+  "description": "APEX product-page system for Shopify cash-on-delivery stores",
+  "owner": { "name": "APEX" },
+  "plugins": [
+    {
+      "name": "apex",
+      "source": "./plugins/apex",
+      "description": "Supplier text to a live Shopify COD product page: mind map, copy, checks, Liquid, review frames, image prompts, product setup, Drive watcher"
+    }
+  ]
+}

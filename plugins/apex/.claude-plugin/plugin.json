@@ -1,0 +1,7 @@
+{
+  "name": "apex",
+  "version": "1.0.0",
+  "description": "APEX: from supplier text to a finished, live Shopify COD product page. Customer mind map, conversion copy, persuasion and voice checks, Liquid sections, review frames, image prompts, product setup and an automated Google Drive watcher. Works for any store and market through a store profile.",
+  "author": { "name": "APEX" },
+  "keywords": ["shopify", "ecommerce", "cash-on-delivery", "product-page", "copywriting", "liquid", "image-prompts"]
+}

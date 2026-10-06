@@ -1,0 +1,536 @@
+{% comment %}
+  ============================================================
+  PRODUCT DESCRIPTION SECTION — <PRODUCT_NAME>
+  ============================================================
+  Section order follows the Ayoub copywriting framework
+  (see references/copywriting-framework.md). Do not reorder.
+  Only non-framework element kept: the reviews form (schema blocks).
+  TITLE STYLE: headings use Cairo 900 + var(--PREFIX-ink); wrap the emotional word(s) in
+  <span class="PREFIX-hl"> (colored var(--PREFIX-accent-dark)); the pain-point title adds
+  class PREFIX-lead for the accent underline. Subtitles = ONE short line (.PREFIX-sub); the
+  section image carries the detail. Accent adapts per product via the CSS vars.
+  NOTE: the Order Journey Badge is a SEPARATE section (templates/journey-badge-template.liquid),
+  placed ABOVE the product image gallery. It is NOT in this description section.
+
+  STORE TOKENS (from the store profile, word for word, see references/store-profile.md):
+    <DELIVERY_INFO>   delivery line, as <p> paragraphs
+    <ORDER_STEPS>     order steps, as a <ul> list, then one <p> pay-on-delivery line
+    <GUARANTEE_LINE>  the guarantee
+    <COD_CLOSER>      the closer line
+
+  USAGE:
+  1. Save as: sections/product-description-<SLUG>.liquid
+  REVIEWS: the 5-card slider is ALWAYS on the page (store standard). With no
+  review blocks it shows the 5 frame cards; real review blocks replace them.
+  Fill <CARD_n_FRAME>, <CARD_n_STARS> (e.g. ★★★★★ or ★★★★☆) and <CARD_n_RATING> (5 or 4).
+
+  2. Include in the product template:
+     {% section 'product-description-<SLUG>' %}
+  3. Images fill themselves: the image factory uploads each one to
+     Content > Files as <SLUG>_<image_id>.png and every slot below finds it
+     by that name. An image chosen in the theme editor still wins.
+
+  IMAGE SLOTS (image picker id = image id in <slug>-images.json):
+    image_hero         images['<SLUG>_image_hero.png']
+    image_problem      images['<SLUG>_image_problem.png']
+    image_benefit_1    images['<SLUG>_image_benefit_1.png']
+    image_benefit_2    images['<SLUG>_image_benefit_2.png']
+    image_benefit_3    images['<SLUG>_image_benefit_3.png']
+  ============================================================
+{% endcomment %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&display=swap');
+  .<PREFIX>-page{
+    --<PREFIX>-green:#22c55e; --<PREFIX>-green-dark:#16a34a; --<PREFIX>-green-soft:#e8f9ee;
+    --<PREFIX>-accent:<ACCENT>; --<PREFIX>-accent-dark:<ACCENT_DARK>; --<PREFIX>-accent-soft:<ACCENT_SOFT>;
+    --<PREFIX>-ink:#1a1a1a; --<PREFIX>-text:#3a3a3a; --<PREFIX>-muted:#6b7280;
+    --<PREFIX>-border:#e5e7eb; --<PREFIX>-red:#c0392b; --<PREFIX>-star:#f59e0b;
+    max-width:760px;margin:0 auto;padding:24px 16px 48px;text-align:center;
+    color:var(--<PREFIX>-text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;
+  }
+  .<PREFIX>-page h2{font-family:'Cairo',-apple-system,'Tahoma',sans-serif;font-size:clamp(24px,6.5vw,38px);font-weight:900;margin:0 0 10px;color:var(--<PREFIX>-ink);line-height:1.3;}
+  .<PREFIX>-page h3{font-family:'Cairo',-apple-system,'Tahoma',sans-serif;font-size:clamp(21px,5.5vw,30px);font-weight:900;margin:0 0 14px;color:var(--<PREFIX>-ink);line-height:1.3;}
+  .<PREFIX>-page .<PREFIX>-hl{color:var(--<PREFIX>-accent-dark);}
+  .<PREFIX>-page .<PREFIX>-lead{position:relative;display:inline-block;padding-bottom:8px;}
+  .<PREFIX>-page .<PREFIX>-lead::after{content:"";position:absolute;bottom:0;right:10%;width:80%;height:5px;border-radius:99px;background:var(--<PREFIX>-accent);}
+  .<PREFIX>-page p{font-size:16px;margin:0 0 14px;color:var(--<PREFIX>-text);}
+  .<PREFIX>-page strong{color:var(--<PREFIX>-green-dark);font-weight:700;}
+  .<PREFIX>-sub{font-size:clamp(15px,4vw,17px);color:var(--<PREFIX>-muted);margin:6px auto 0;font-weight:600;line-height:1.7;max-width:460px;} /* ONE short line only, image carries detail */
+
+  .<PREFIX>-section{margin:0 0 44px;}
+  .<PREFIX>-section img{width:100%;height:auto;border-radius:14px;display:block;margin:18px auto 0;}
+
+  /* Image placeholder + closer (from design-system) */
+  .<PREFIX>-img-placeholder{width:100%;background:#e5e7eb;border-radius:14px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#9ca3af;gap:8px;margin:18px auto 0;}
+  .<PREFIX>-img-placeholder .<PREFIX>-ph-icon{font-size:3rem;line-height:1;}
+  .<PREFIX>-img-placeholder .<PREFIX>-ph-text{font-size:.85rem;margin:0;font-weight:500;color:#9ca3af;}
+
+  /* Reviews: 5-card slider (store standard form) */
+  .<PREFIX>-reviews{margin:0 0 44px;}
+  .<PREFIX>-reviews-title{font-size:22px;font-weight:800;color:var(--<PREFIX>-ink);margin:0 0 14px;}
+  .<PREFIX>-reviews-cta{display:inline-block;background:var(--<PREFIX>-accent-dark);color:#fff;padding:12px 26px;border-radius:10px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 18px;}
+  .<PREFIX>-rv-band{background:var(--<PREFIX>-accent-soft);border:1px solid color-mix(in srgb, var(--<PREFIX>-accent) 22%, #fff);border-radius:14px;padding:16px 14px;margin:0 0 18px;}
+  .<PREFIX>-rv-avatars{display:flex;justify-content:center;margin:0 0 8px;}
+  .<PREFIX>-rv-avatar{width:44px;height:44px;min-width:44px;border-radius:50%;border:2px solid #fff;background:#e5e7eb;margin-left:-10px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px;color:#5b3a8c;}
+  .<PREFIX>-rv-avatar:first-child{margin-left:0;}
+  .<PREFIX>-rv-avatar img{width:100%;height:100%;object-fit:cover;margin:0;border-radius:0;}
+  .<PREFIX>-rv-count{font-size:17px;font-weight:800;color:var(--<PREFIX>-ink);margin:0 0 4px;}
+  .<PREFIX>-rv-rating{font-size:16px;color:var(--<PREFIX>-ink);font-weight:600;margin:0;}
+  .<PREFIX>-rv-rating .<PREFIX>-rv-st{color:var(--<PREFIX>-star);letter-spacing:2px;margin-right:6px;}
+  .<PREFIX>-rv-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 2px 6px;}
+  .<PREFIX>-rv-track::-webkit-scrollbar{display:none;}
+  .<PREFIX>-review{flex:0 0 85%;max-width:340px;scroll-snap-align:start;background:#fff;border:1px solid var(--<PREFIX>-border);border-radius:14px;padding:18px 20px;text-align:left;}
+  .<PREFIX>-review img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:10px;margin:0 0 14px;display:block;}
+  .<PREFIX>-review .<PREFIX>-img-placeholder{margin:0 0 14px;aspect-ratio:4/5;min-height:0;border-radius:10px;}
+  .<PREFIX>-review-name{font-size:16px;font-weight:700;color:var(--<PREFIX>-ink);margin:0 0 10px;}
+  .<PREFIX>-review-stars{color:var(--<PREFIX>-ink);font-size:17px;letter-spacing:3px;margin:0 0 12px;}
+  .<PREFIX>-review-text{font-size:16px;color:var(--<PREFIX>-text);margin:0;line-height:1.6;}
+  .<PREFIX>-rv-nav{display:flex;justify-content:center;gap:18px;margin-top:18px;}
+  .<PREFIX>-rv-btn{width:52px;height:52px;border-radius:50%;border:0;background:#1a1a1a;color:#fff;font-size:22px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+  .<PREFIX>-rv-btn.<PREFIX>-rv-prev{background:#c4c4c4;}
+
+  /* Us vs others comparison */
+  .<PREFIX>-compare{max-width:520px;width:100%;border-collapse:collapse;margin:8px auto 0;font-size:15px;}
+  .<PREFIX>-compare th,.<PREFIX>-compare td{padding:12px 10px;border-bottom:1px solid var(--<PREFIX>-border);text-align:center;}
+  .<PREFIX>-compare th{font-weight:800;color:var(--<PREFIX>-ink);}
+  .<PREFIX>-compare td:first-child{text-align:left;font-weight:600;color:var(--<PREFIX>-ink);}
+  .<PREFIX>-compare .us{color:var(--<PREFIX>-green-dark);font-weight:800;}
+  .<PREFIX>-compare .them{color:var(--<PREFIX>-red);font-weight:800;}
+  .<PREFIX>-compare-wrap{display:flex;justify-content:center;}
+
+  /* Final CTA */
+  .<PREFIX>-cta{background:var(--<PREFIX>-accent-soft);border-radius:14px;padding:26px 20px;margin:0 0 40px;}
+  .<PREFIX>-cta h3{margin-bottom:10px;}
+  .<PREFIX>-cta .guar{font-size:16px;font-weight:800;color:var(--<PREFIX>-red);margin:6px 0;}
+  .<PREFIX>-cta .cod{font-size:15px;font-weight:700;color:var(--<PREFIX>-ink);margin:6px 0 0;}
+
+  /* FAQ */
+  .<PREFIX>-faq-title{font-size:22px;font-weight:800;color:var(--<PREFIX>-ink);margin:40px 0 18px;text-align:center;}
+  .<PREFIX>-accordions{margin:0 0 20px;text-align:left;}
+  .<PREFIX>-accordion{background:var(--<PREFIX>-accent-soft);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+  .<PREFIX>-accordion summary{list-style:none;cursor:pointer;padding:16px 20px;font-size:16px;font-weight:700;color:var(--<PREFIX>-ink);display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .<PREFIX>-accordion summary::-webkit-details-marker{display:none;}
+  .<PREFIX>-accordion summary::after{content:"▼";font-size:12px;color:var(--<PREFIX>-accent-dark);transition:transform .25s;}
+  .<PREFIX>-accordion[open] summary::after{transform:rotate(180deg);}
+  .<PREFIX>-accordion-body{padding:0 20px 18px;font-size:15px;color:var(--<PREFIX>-text);line-height:1.65;}
+  .<PREFIX>-accordion-body ul{margin:0;padding-left:22px;} .<PREFIX>-accordion-body li{margin:6px 0;}
+
+  @media(max-width:600px){
+    .<PREFIX>-page{padding:16px 12px 36px;} .<PREFIX>-page p{font-size:15px;}
+    .<PREFIX>-sub{font-size:16px;}
+  }
+</style>
+
+<div class="<PREFIX>-page">
+
+  {%- comment -%} Three info accordions FIRST (directly under the buy button, before the hook) {%- endcomment -%}
+  <div class="<PREFIX>-accordions">
+    <details class="<PREFIX>-accordion" name="<PREFIX>-info"><summary>📦 What's in the Box</summary><div class="<PREFIX>-accordion-body"><ul><WHATS_IN_BOX></ul></div></details>
+    <details class="<PREFIX>-accordion" name="<PREFIX>-info"><summary>🚚 Delivery Information</summary><div class="<PREFIX>-accordion-body"><DELIVERY_INFO></div></details>
+    <details class="<PREFIX>-accordion" name="<PREFIX>-info"><summary>🛒 How To Order</summary><div class="<PREFIX>-accordion-body"><ORDER_STEPS></div></details>
+  </div>
+
+  {%- comment -%} ===================== ABOVE THE FOLD ===================== {%- endcomment -%}
+
+  {%- comment -%} Q1 — Value Proposition (Hook) {%- endcomment -%}
+  <div class="<PREFIX>-section">
+    <h2><HOOK_HEADLINE_with_<span class="<PREFIX>-hl">emphasis word</span>></h2>
+    <p class="<PREFIX>-sub"><HOOK_SUBHEAD_one_short_line></p>
+    {%- liquid
+      assign pe_img = section.settings.image_hero
+      if pe_img == blank
+        assign pe_img = images['<SLUG>_image_hero.png']
+      endif
+    -%}
+    {% if pe_img != blank %}
+      <img src="{{ pe_img | image_url: width: 800 }}" alt="<PRODUCT_NAME>" loading="lazy" width="{{ pe_img.width }}" height="{{ pe_img.height }}">
+    {% else %}
+      <div class="<PREFIX>-img-placeholder"><span class="<PREFIX>-ph-icon">📷</span><p class="<PREFIX>-ph-text">Upload "<PRODUCT_NAME>" image in theme editor</p></div>
+    {% endif %}
+  </div>
+
+  {%- comment -%} ===================== BELOW THE FOLD ===================== {%- endcomment -%}
+
+  {%- comment -%} 1 — Pain Point + Desire {%- endcomment -%}
+  <div class="<PREFIX>-section">
+    <h3 class="<PREFIX>-lead"><PROBLEM_H3_with_<span class="<PREFIX>-hl">emotional words</span>></h3>
+    <p><PROBLEM_AGITATION_WITH_EMOJI></p>
+    <p><DESIRE_TURN></p>
+    {%- liquid
+      assign pe_img = section.settings.image_problem
+      if pe_img == blank
+        assign pe_img = images['<SLUG>_image_problem.png']
+      endif
+    -%}
+    {% if pe_img != blank %}
+      <img src="{{ pe_img | image_url: width: 800 }}" alt="The problem" loading="lazy" width="{{ pe_img.width }}" height="{{ pe_img.height }}">
+    {% else %}
+      <div class="<PREFIX>-img-placeholder"><span class="<PREFIX>-ph-icon">📷</span><p class="<PREFIX>-ph-text">Upload "The problem" image in theme editor</p></div>
+    {% endif %}
+  </div>
+
+  {%- comment -%}
+    2. Social proof: the 5-card review slider (store standard form). It is in EVERY
+    template but OFF by default: it only shows when the owner ticks "Show reviews
+    section" (setting show_reviews, default false) in the theme editor.
+    Cards come from the "Customer Review" blocks; with no blocks yet, the 5 frame cards
+    render. Photos are optional: an uploaded photo shows, otherwise no image box at all.
+    Avatars: only uploaded ones show; no avatar row when none is uploaded.
+    When the section is on, the band ALWAYS shows the count and rating lines: editable
+    settings with placeholder defaults ([count] / [avg]) for the store's real numbers.
+  {%- endcomment -%}
+  {%- if section.settings.show_reviews -%}
+  {%- assign <PREFIX>_review_count = 0 -%}
+  {%- for block in section.blocks -%}{%- if block.type == 'review' -%}{%- assign <PREFIX>_review_count = <PREFIX>_review_count | plus: 1 -%}{%- endif -%}{%- endfor -%}
+  <div class="<PREFIX>-reviews" data-<PREFIX>-slider>
+    <h3 class="<PREFIX>-reviews-title">{{ section.settings.reviews_title | default: 'What our customers say' }}</h3>
+    <a href="{{ section.settings.reviews_cta_link | default: '#MainContent' }}" class="<PREFIX>-reviews-cta">{{ section.settings.reviews_cta_text | default: 'I want to order this ↑' }}</a>
+    <div class="<PREFIX>-rv-band">
+      {%- assign <PREFIX>_avatars = 'avatar_1,avatar_2,avatar_3,avatar_4' | split: ',' -%}
+      {%- assign <PREFIX>_av_count = 0 -%}
+      {%- for a in <PREFIX>_avatars -%}{%- if section.settings[a] != blank -%}{%- assign <PREFIX>_av_count = <PREFIX>_av_count | plus: 1 -%}{%- endif -%}{%- endfor -%}
+      {%- if <PREFIX>_av_count > 0 -%}
+      <div class="<PREFIX>-rv-avatars">
+        {%- for a in <PREFIX>_avatars -%}
+          {%- assign <PREFIX>_av = section.settings[a] -%}
+          {%- if <PREFIX>_av != blank -%}<span class="<PREFIX>-rv-avatar"><img src="{{ <PREFIX>_av | image_url: width: 100 }}" alt="Customer" loading="lazy" width="44" height="44"></span>{%- endif -%}
+        {%- endfor -%}
+      </div>
+      {%- endif -%}
+      <p class="<PREFIX>-rv-count">{{ section.settings.reviews_count_line | default: '[count]+ Verified Reviews' }}</p>
+      <p class="<PREFIX>-rv-rating"><span class="<PREFIX>-rv-st">★★★★★</span>{{ section.settings.reviews_rating_line | default: 'Excellent, [avg] out of 5 stars' }}</p>
+    </div>
+    <div class="<PREFIX>-rv-track">
+      {%- if <PREFIX>_review_count > 0 -%}
+      {% for block in section.blocks %}{% if block.type == 'review' %}
+        <div class="<PREFIX>-review" {{ block.shopify_attributes }}>
+          {% if block.settings.review_image != blank %}
+            <img src="{{ block.settings.review_image | image_url: width: 600 }}" alt="Customer photo from {{ block.settings.review_name | escape }}" loading="lazy" width="{{ block.settings.review_image.width }}" height="{{ block.settings.review_image.height }}">
+          {% endif %}
+          <p class="<PREFIX>-review-name">💬 {{ block.settings.review_name }}</p>
+          <p class="<PREFIX>-review-stars">{%- assign rating = block.settings.review_rating | plus: 0 -%}{% for i in (1..5) %}{% if i <= rating %}★{% else %}☆{% endif %}{% endfor %}</p>
+          <p class="<PREFIX>-review-text">{{ block.settings.review_text }}</p>
+        </div>
+      {% endif %}{% endfor %}
+      {%- else -%}
+        <div class="<PREFIX>-review">
+          <p class="<PREFIX>-review-name">💬 [First name], [Town]</p>
+          <p class="<PREFIX>-review-stars"><CARD_1_STARS></p>
+          <p class="<PREFIX>-review-text"><CARD_1_FRAME></p>
+        </div>
+        <div class="<PREFIX>-review">
+          <p class="<PREFIX>-review-name">💬 [First name], [Town]</p>
+          <p class="<PREFIX>-review-stars"><CARD_2_STARS></p>
+          <p class="<PREFIX>-review-text"><CARD_2_FRAME></p>
+        </div>
+        <div class="<PREFIX>-review">
+          <p class="<PREFIX>-review-name">💬 [First name], [Town]</p>
+          <p class="<PREFIX>-review-stars"><CARD_3_STARS></p>
+          <p class="<PREFIX>-review-text"><CARD_3_FRAME></p>
+        </div>
+        <div class="<PREFIX>-review">
+          <p class="<PREFIX>-review-name">💬 [First name], [Town]</p>
+          <p class="<PREFIX>-review-stars"><CARD_4_STARS></p>
+          <p class="<PREFIX>-review-text"><CARD_4_FRAME></p>
+        </div>
+        <div class="<PREFIX>-review">
+          <p class="<PREFIX>-review-name">💬 [First name], [Town]</p>
+          <p class="<PREFIX>-review-stars"><CARD_5_STARS></p>
+          <p class="<PREFIX>-review-text"><CARD_5_FRAME></p>
+        </div>
+      {%- endif -%}
+    </div>
+    <div class="<PREFIX>-rv-nav">
+      <button type="button" class="<PREFIX>-rv-btn <PREFIX>-rv-prev" aria-label="Previous review">‹</button>
+      <button type="button" class="<PREFIX>-rv-btn <PREFIX>-rv-next" aria-label="Next review">›</button>
+    </div>
+  </div>
+  <script>
+    document.querySelectorAll('[data-<PREFIX>-slider]').forEach(function (w) {
+      var t = w.querySelector('.<PREFIX>-rv-track');
+      var step = function () { var c = t.querySelector('.<PREFIX>-review'); return c ? c.offsetWidth + 14 : t.clientWidth; };
+      w.querySelector('.<PREFIX>-rv-prev').addEventListener('click', function () { t.scrollBy({ left: -step(), behavior: 'smooth' }); });
+      w.querySelector('.<PREFIX>-rv-next').addEventListener('click', function () { t.scrollBy({ left: step(), behavior: 'smooth' }); });
+    });
+  </script>
+  {%- endif -%}
+
+  {%- comment -%} 3 — Benefits Deep Dive (top 3, each paragraph + image) {%- endcomment -%}
+  <div class="<PREFIX>-section">
+    <h3><BENEFIT_1_H3></h3>
+    <p><BENEFIT_1_BODY></p>
+    {%- liquid
+      assign pe_img = section.settings.image_benefit_1
+      if pe_img == blank
+        assign pe_img = images['<SLUG>_image_benefit_1.png']
+      endif
+    -%}
+    {% if pe_img != blank %}
+      <img src="{{ pe_img | image_url: width: 800 }}" alt="<BENEFIT_1_H3>" loading="lazy" width="{{ pe_img.width }}" height="{{ pe_img.height }}">
+    {% else %}
+      <div class="<PREFIX>-img-placeholder"><span class="<PREFIX>-ph-icon">📷</span><p class="<PREFIX>-ph-text">Upload "<BENEFIT_1_H3>" image in theme editor</p></div>
+    {% endif %}
+  </div>
+  <div class="<PREFIX>-section">
+    <h3><BENEFIT_2_H3></h3>
+    <p><BENEFIT_2_BODY></p>
+    {%- liquid
+      assign pe_img = section.settings.image_benefit_2
+      if pe_img == blank
+        assign pe_img = images['<SLUG>_image_benefit_2.png']
+      endif
+    -%}
+    {% if pe_img != blank %}
+      <img src="{{ pe_img | image_url: width: 800 }}" alt="<BENEFIT_2_H3>" loading="lazy" width="{{ pe_img.width }}" height="{{ pe_img.height }}">
+    {% else %}
+      <div class="<PREFIX>-img-placeholder"><span class="<PREFIX>-ph-icon">📷</span><p class="<PREFIX>-ph-text">Upload "<BENEFIT_2_H3>" image in theme editor</p></div>
+    {% endif %}
+  </div>
+  <div class="<PREFIX>-section">
+    <h3><BENEFIT_3_H3></h3>
+    <p><BENEFIT_3_BODY></p>
+    {%- liquid
+      assign pe_img = section.settings.image_benefit_3
+      if pe_img == blank
+        assign pe_img = images['<SLUG>_image_benefit_3.png']
+      endif
+    -%}
+    {% if pe_img != blank %}
+      <img src="{{ pe_img | image_url: width: 800 }}" alt="<BENEFIT_3_H3>" loading="lazy" width="{{ pe_img.width }}" height="{{ pe_img.height }}">
+    {% else %}
+      <div class="<PREFIX>-img-placeholder"><span class="<PREFIX>-ph-icon">📷</span><p class="<PREFIX>-ph-text">Upload "<BENEFIT_3_H3>" image in theme editor</p></div>
+    {% endif %}
+  </div>
+
+  {%- comment -%} 4 — Us vs Others comparison {%- endcomment -%}
+  <div class="<PREFIX>-section">
+    <h3>Why We're the Better Choice</h3>
+    <p><COMPARE_INTRO></p>
+    <div class="<PREFIX>-compare-wrap">
+      <table class="<PREFIX>-compare">
+        <tr><th></th><th>Us</th><th>Others</th></tr>
+        <tr><td><COMPARE_ROW_1></td><td class="us">✓</td><td class="them">✗</td></tr>
+        <tr><td><COMPARE_ROW_2></td><td class="us">✓</td><td class="them">✗</td></tr>
+        <tr><td><COMPARE_ROW_3></td><td class="us">✓</td><td class="them">✗</td></tr>
+        <tr><td><COMPARE_ROW_4></td><td class="us">✓</td><td class="them">✗</td></tr>
+        <tr><td><COMPARE_ROW_5></td><td class="us">✓</td><td class="them">✗</td></tr>
+      </table>
+    </div>
+  </div>
+
+  {%- comment -%} 5 — Final CTA + Guarantee (+ honest urgency, + COD closer) {%- endcomment -%}
+  <div class="<PREFIX>-cta">
+    <h3><CTA_HEADLINE></h3>
+    <p><CTA_LINE></p>
+    <p class="guar">🛡️ <GUARANTEE_LINE></p>
+    <p class="cod"><COD_CLOSER></p>
+  </div>
+
+  {%- comment -%} 6 — FAQ (5 to 6, objection based) {%- endcomment -%}
+  <h3 class="<PREFIX>-faq-title">Frequently Asked Questions</h3>
+  <div class="<PREFIX>-accordions">
+    <details class="<PREFIX>-accordion" name="<PREFIX>-faq"><summary>❓ <FAQ_Q_1></summary><div class="<PREFIX>-accordion-body"><p><FAQ_A_1></p></div></details>
+    <details class="<PREFIX>-accordion" name="<PREFIX>-faq"><summary>❓ <FAQ_Q_2></summary><div class="<PREFIX>-accordion-body"><p><FAQ_A_2></p></div></details>
+    <details class="<PREFIX>-accordion" name="<PREFIX>-faq"><summary>❓ <FAQ_Q_3></summary><div class="<PREFIX>-accordion-body"><p><FAQ_A_3></p></div></details>
+    <details class="<PREFIX>-accordion" name="<PREFIX>-faq"><summary>❓ <FAQ_Q_4></summary><div class="<PREFIX>-accordion-body"><p><FAQ_A_4></p></div></details>
+    <details class="<PREFIX>-accordion" name="<PREFIX>-faq"><summary>❓ <FAQ_Q_5></summary><div class="<PREFIX>-accordion-body"><p><FAQ_A_5></p></div></details>
+    <details class="<PREFIX>-accordion" name="<PREFIX>-faq"><summary>❓ <FAQ_Q_6></summary><div class="<PREFIX>-accordion-body"><p><FAQ_A_6></p></div></details>
+  </div>
+
+</div>
+
+{% schema %}
+{
+  "name": "Product Description",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_hero",
+      "label": "image_hero"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_problem",
+      "label": "image_problem"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_benefit_1",
+      "label": "image_benefit_1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_benefit_2",
+      "label": "image_benefit_2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_benefit_3",
+      "label": "image_benefit_3"
+    },
+    {
+      "type": "header",
+      "content": "Reviews slider (off by default)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show reviews section",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "reviews_title",
+      "label": "Reviews title",
+      "default": "What our customers say"
+    },
+    {
+      "type": "text",
+      "id": "reviews_cta_text",
+      "label": "Reviews button text",
+      "default": "I want to order this ↑"
+    },
+    {
+      "type": "url",
+      "id": "reviews_cta_link",
+      "label": "Reviews button link (empty = back to the order form)"
+    },
+    {
+      "type": "text",
+      "id": "reviews_count_line",
+      "label": "Band line 1: review count (put your real number)","default":"[count]+ Verified Reviews"
+    },
+    {
+      "type": "text",
+      "id": "reviews_rating_line",
+      "label": "Band line 2: rating line (put your real average)","default":"Excellent, [avg] out of 5 stars"
+    },
+    {
+      "type": "image_picker",
+      "id": "avatar_1",
+      "label": "Band avatar 1 (real customer)"
+    },
+    {
+      "type": "image_picker",
+      "id": "avatar_2",
+      "label": "Band avatar 2 (real customer)"
+    },
+    {
+      "type": "image_picker",
+      "id": "avatar_3",
+      "label": "Band avatar 3 (real customer)"
+    },
+    {
+      "type": "image_picker",
+      "id": "avatar_4",
+      "label": "Band avatar 4 (real customer)"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Customer Review",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "text",
+          "id": "review_name",
+          "label": "First name + town (real customer, with permission)",
+          "default": "[First name] [Town]"
+        },
+        {
+          "type": "select",
+          "id": "review_rating",
+          "label": "Star Rating",
+          "options": [
+            {
+              "value": "5",
+              "label": "5 stars"
+            },
+            {
+              "value": "4",
+              "label": "4 stars"
+            },
+            {
+              "value": "3",
+              "label": "3 stars"
+            },
+            {
+              "value": "2",
+              "label": "2 stars"
+            },
+            {
+              "value": "1",
+              "label": "1 star"
+            }
+          ],
+          "default": "5"
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "Review Text",
+          "default": "Great product!"
+        },
+        {
+          "type": "image_picker",
+          "id": "review_image",
+          "label": "Review photo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Description",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "review_name": "[First name], [Town]",
+            "review_rating": "<CARD_1_RATING>",
+            "review_text": "<CARD_1_FRAME>"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "review_name": "[First name], [Town]",
+            "review_rating": "<CARD_2_RATING>",
+            "review_text": "<CARD_2_FRAME>"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "review_name": "[First name], [Town]",
+            "review_rating": "<CARD_3_RATING>",
+            "review_text": "<CARD_3_FRAME>"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "review_name": "[First name], [Town]",
+            "review_rating": "<CARD_4_RATING>",
+            "review_text": "<CARD_4_FRAME>"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "review_name": "[First name], [Town]",
+            "review_rating": "<CARD_5_RATING>",
+            "review_text": "<CARD_5_FRAME>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

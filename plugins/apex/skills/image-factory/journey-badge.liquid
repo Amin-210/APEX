@@ -1,0 +1,60 @@
+{% comment %}
+  ============================================================
+  ORDER JOURNEY BADGE, STANDALONE SECTION
+  ============================================================
+  Separate from the product description so it can sit at the VERY TOP
+  of the product page, ABOVE the product image gallery.
+
+  INSTALL (once per store, reused for every product):
+  1. Save as: sections/journey-badge.liquid
+     (If it is already in the theme from an earlier product, do NOT
+     overwrite it. Just add it to this product's template.)
+  2. In product.<slug>.json, put this section FIRST, before the
+     main product section (gallery, title, price, buy button).
+  3. Colours (set in the section settings for this template):
+     circle = the page accent, banner = its dark shade (same hexes as the page CSS)
+{% endcomment %}
+
+<style>
+  .jb-wrap{
+    --jb-accent: {{ section.settings.circle_color }};
+    --jb-banner: {{ section.settings.banner_color }};
+    --jb-ink:#1a1a1a;
+    max-width:480px;margin:0 auto 18px;padding:24px 20px;background:#fff;border-radius:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);text-align:center;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  }
+  .jb-banner{background:var(--jb-banner);color:#fff;font-weight:800;font-size:15px;letter-spacing:1px;padding:10px 16px;border-radius:8px;margin-bottom:20px;text-transform:uppercase;}
+  .jb-steps{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .jb-step{flex:1;}
+  .jb-circle{width:64px;height:64px;background:var(--jb-accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px;}
+  .jb-label{font-size:12px;font-weight:800;color:var(--jb-ink);line-height:1.3;text-transform:uppercase;}
+  .jb-arrow{color:#9ca3af;font-size:28px;flex-shrink:0;margin-bottom:22px;}
+  @media(max-width:600px){
+    .jb-wrap{padding:20px 14px;} .jb-circle{width:54px;height:54px;font-size:24px;}
+    .jb-arrow{font-size:22px;} .jb-label{font-size:11px;}
+  }
+</style>
+
+<div class="jb-wrap">
+  <div class="jb-banner">🟢 {{ section.settings.banner_text }} 🟢</div>
+  <div class="jb-steps">
+    <div class="jb-step"><div class="jb-circle">🛒</div><div class="jb-label">Order</div></div>
+    <div class="jb-arrow">›</div>
+    <div class="jb-step"><div class="jb-circle">📦</div><div class="jb-label">Receive<br>Product</div></div>
+    <div class="jb-arrow">›</div>
+    <div class="jb-step"><div class="jb-circle">💵</div><div class="jb-label">Pay Cash<br>on Delivery</div></div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Order Journey Badge",
+  "settings": [
+    { "type": "text", "id": "banner_text", "label": "Banner text", "default": "FREE DELIVERY" },
+    { "type": "color", "id": "circle_color", "label": "Circle color (product accent)", "default": "#16a34a" },
+    { "type": "color", "id": "banner_color", "label": "Banner color (deep accent)", "default": "#166534" }
+  ],
+  "presets": [ { "name": "Order Journey Badge" } ]
+}
+{% endschema %}
